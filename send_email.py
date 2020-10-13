@@ -1,17 +1,18 @@
 import os
 import smtplib
 import ssl
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-def send_email(html):
+def send_email(html, email):
     sender_email = os.getenv("SENDER_EMAIL")
-    receiver_email = os.getenv("RECEIVER_EMAIL").split(',')
+    receiver_email = email.split(',')
     password = os.getenv("SENDER_PW")
 
     message = MIMEMultipart("alternative")
-    message["Subject"] = f"Változtatások az Ambulancia Táblázaton"
+    message["Subject"] = f"Változtatások az Ambulancia Táblázaton"  # {datetime.now()}"
     message["From"] = "Táblázat Értesítő"
     message["To"] = ", ".join(receiver_email)
 
