@@ -46,7 +46,7 @@ def data_to_html(historic_diffs, name):
             html += "</p>"
 
     html += "<hr/><small>A táblázat napközben óránként van ellenőrizve. (07-21)<br /> \
-            Válaszlevélben jelezd ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.</small>"
+            Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.</small>"
 
     return html
 
