@@ -36,7 +36,7 @@ def data_to_html(historic_diffs, name):
         html += "</p>"
 
         for sheet in entry["diffs"]:
-            html += f"<h3>Változtatások a <i>{sheet['title']}</i> fülön</h3><p>"
+            html += f"<h3>Változtatások a(z) <i>{sheet['title']}</i> fülön</h3><p>"
             for diff in sheet["diff"]:
                 highlight = match(diff, name)
                 html += f"<u>{print_path(diff['path'])}:</u><br /> &nbsp;&nbsp;&nbsp;&nbsp; \
