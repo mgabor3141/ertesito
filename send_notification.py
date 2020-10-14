@@ -21,6 +21,9 @@ def print_path(path):
     return " / ".join(path)
 
 
+VOWELS = ['a', 'á', 'e', 'é', 'i', 'í', 'o', 'ó', 'ö', 'ő', 'u', 'ú', 'ü', 'ű']
+
+
 def data_to_html(historic_diffs, name):
     html = "<h1>Jelentés változásokról</h1>"
 
@@ -36,7 +39,8 @@ def data_to_html(historic_diffs, name):
         html += "</p>"
 
         for sheet in entry["diffs"]:
-            html += f"<h3>Változtatások a(z) <i>{sheet['title']}</i> fülön</h3><p>"
+            html += f"<h3>Változtatások a{'z' if sheet['title'][0].lower() in VOWELS else ''}\
+                        <i>{sheet['title']}</i> fülön</h3><p>"
             for diff in sheet["diff"]:
                 highlight = match(diff, name)
                 html += f"<u>{print_path(diff['path'])}:</u><br /> &nbsp;&nbsp;&nbsp;&nbsp; \
