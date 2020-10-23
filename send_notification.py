@@ -65,6 +65,10 @@ def match(diff, name):
 def send_notification(_historic_diffs):
     email = False
 
+    most_recent = max(_historic_diffs.keys())
+    if most_recent:
+        send_to_others(_historic_diffs[most_recent], most_recent)
+
     for time in _historic_diffs:
         entry = _historic_diffs[time]
 
@@ -78,8 +82,6 @@ def send_notification(_historic_diffs):
                     email = True
                     print("Match found:", diff)
                     break
-
-        send_to_others(entry, time)
 
     if email:
         send_email(data_to_html(_historic_diffs, os.getenv("MATCH_STRING")), os.getenv('RECEIVER_EMAIL'))
