@@ -49,8 +49,9 @@ def data_to_html(historic_diffs, name):
                                 {'</b>' if highlight else ''}"
             html += "</p>"
 
-    html += "<hr/><small>A táblázat napközben óránként van ellenőrizve. (07-21)<br /> \
-            Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.</small>"
+    html += "<hr/><small>A táblázat napközben óránként van ellenőrizve. (07-22)<br /> \
+            Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.<br/>\
+            Az adatok tájékoztató jellegűek, a helyességükért illetve teljességükért felelősséget senki nem vállal.</small>"
 
     return html
 
