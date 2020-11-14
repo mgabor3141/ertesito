@@ -78,6 +78,11 @@ def send_notification(_historic_diffs):
             break
 
         for sheet in entry["diffs"]:
+            if (sheet.get("unhandled")):
+                email = True
+                print("Unhandled sheet:", sheet)
+                continue
+
             for diff in sheet["diff"]:
                 if match(diff, os.getenv("MATCH_STRING")):
                     email = True
@@ -104,6 +109,11 @@ def send_to_others(entry, time):
             should_send_email = True
         else:
             for sheet in entry["diffs"]:
+                if (sheet.get("unhandled")):
+                    email = True
+                    print("Unhandled sheet:", sheet)
+                    continue
+                
                 for diff in sheet["diff"]:
                     if match(diff, name):
                         should_send_email = True
