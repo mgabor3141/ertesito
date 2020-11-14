@@ -21,7 +21,7 @@ def sheet_diff(old_tab, new_tab):
         or len(old_tab["data"]) == 0
         or len(new_tab["data"][0]) != len(old_tab["data"][0])
     ):
-        return [{"title": new_tab["title"], "unhandled": True}]
+        return [True, {"title": new_tab["title"], "unhandled": True}]
 
     for row in range(new_tab["frozenRowCount"], len(new_tab["data"])):
         for col in range(new_tab["frozenColumnCount"], len(new_tab["data"][0])):
