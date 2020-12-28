@@ -1,6 +1,5 @@
 import json
 import os
-from datetime import datetime
 from operator import itemgetter
 
 from fuzzywuzzy import fuzz
@@ -24,30 +23,27 @@ def print_path(path):
 VOWELS = ['a', 'á', 'e', 'é', 'i', 'í', 'o', 'ó', 'ö', 'ő', 'u', 'ú', 'ü', 'ű']
 
 
-def data_to_html(historic_diffs, name):
+def data_to_html(added, removed, name):
     html = "<h1>Jelentés változásokról</h1>"
 
     html += f"<p>Kedves {name}!</p>"
     html += f"<p>Változás történt az ambuláns beosztásodban:</p>"
 
-    for time, entry in reversed(list(historic_diffs.items())):
-        html += f"<h2>{datetime.fromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M')}</h2>"
+    if len(added) > 0:
+        html += f"<h2>Hozzáadott bejegyzések</h2><p>"
 
-        html += "<p>"
-        for sheet in entry["added"]:
-            html += f"Új tábla: {sheet['title']}<br />"
+        for entry in added:
+            html += f"<u>{print_path(entry[0])}:</u> {entry[1]}"
+
         html += "</p>"
 
-        for sheet in entry["diffs"]:
-            html += f"<h3>Változtatások a{'z' if sheet['title'][0].lower() in VOWELS else ''}\
-                        <i>{sheet['title']}</i> fülön</h3><p>"
-            for diff in sheet["diff"]:
-                highlight = match(diff, name)
-                html += f"<u>{print_path(diff['path'])}:</u><br /> &nbsp;&nbsp;&nbsp;&nbsp; \
-                                {'<b style=background-color:purple;color:white;padding-left:3px;padding-right:3px;>' if highlight else ''} \
-                                {print_value(diff['before'])} -> {print_value(diff['after'])}<br /> \
-                                {'</b>' if highlight else ''}"
-            html += "</p>"
+    if len(removed) > 0:
+        html += f"<h2>Törölt bejegyzések</h2><p>"
+
+        for entry in removed:
+            html += f"<u>{print_path(entry[0])}:</u> <strike>{entry[1]}</strike>"
+
+        html += "</p>"
 
     html += "<hr/><small>A táblázat napközben óránként van ellenőrizve. (07-22)<br /> \
             Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.<br/>\
@@ -56,74 +52,30 @@ def data_to_html(historic_diffs, name):
     return html
 
 
-def match(diff, name):
-    return (
-        fuzz.token_set_ratio(diff["before"], name) >= 80
-        or fuzz.token_set_ratio(diff["after"], name) >= 80
-    )
+def match(entry, name):
+    return fuzz.token_set_ratio(entry[1], name) >= 80
 
 
-def send_notification(_historic_diffs):
-    email = False
-
-    most_recent = max(_historic_diffs.keys())
-    if most_recent:
-        send_to_others(_historic_diffs[most_recent], most_recent)
-
-    for time in _historic_diffs:
-        entry = _historic_diffs[time]
-
-        if len(entry["added"]) > 0:
-            email = True
-            break
-
-        for sheet in entry["diffs"]:
-            if (sheet.get("unhandled")):
-                email = True
-                print("Unhandled sheet:", sheet)
-                continue
-
-            for diff in sheet["diff"]:
-                if match(diff, os.getenv("MATCH_STRING")):
-                    email = True
-                    print("Match found:", diff)
-                    break
-
-    if email:
-        send_email(data_to_html(_historic_diffs, os.getenv("MATCH_STRING")), os.getenv('RECEIVER_EMAIL'))
-        return True
-
-    return False
-
-
-EMAILS_FILE = 'emails.json'
-
-
-def send_to_others(entry, time):
-    emails = json.load(open(EMAILS_FILE))
+def send_notifications(added, removed):
+    emails = json.load(open(os.getenv('EMAILS_FILE')))
 
     for email_entry in emails:
         name, email = itemgetter('name', 'email')(email_entry)
-        should_send_email = False
-        if len(entry["added"]) > 0:
-            should_send_email = True
-        else:
-            for sheet in entry["diffs"]:
-                if (sheet.get("unhandled")):
-                    email = True
-                    print("Unhandled sheet:", sheet)
-                    continue
-                
-                for diff in sheet["diff"]:
-                    if match(diff, name):
-                        should_send_email = True
-                        print(f"Match found for {name}:", diff)
-                        break
 
-        if should_send_email:
-            send_email(data_to_html({time: entry}, name), email)
+        added_matches = [entry for entry in added if match(entry, name)]
+        removed_matches = [entry for entry in removed if match(entry, name)]
+
+        if len(added_matches) > 0 or len(removed_matches):
+            send_email(data_to_html(added_matches, removed_matches, name), email)
 
 
 if __name__ == "__main__":
-    historic_diffs = json.load(open("data/diff/matched_diff.json"))
-    print(send_notification(historic_diffs))
+    _added = [
+        (('Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: NAME')
+    ]
+
+    _removed = [
+        (('Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: NAME')
+    ]
+
+    print(send_notifications(_added, _removed))

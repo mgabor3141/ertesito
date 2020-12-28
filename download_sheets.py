@@ -16,17 +16,11 @@ def part_of_merge(r, c, merges):
     return None
 
 
-def expand_merged_cells(data, merges, frozen_row_count):
+def expand_merged_cells(data, merges):
     expanded_data = []
 
     for r, row in enumerate(data):
         expanded_data.append([])
-
-        if sum([c != "" for c in row]) <= 1:
-            if r < frozen_row_count:
-                frozen_row_count -= 1
-
-            continue
 
         for c, cell in enumerate(row):
             expanded_data[-1].append(cell)
@@ -35,7 +29,7 @@ def expand_merged_cells(data, merges, frozen_row_count):
             if merge_origin:
                 expanded_data[-1][-1] = expanded_data[merge_origin[0]][merge_origin[1]]
 
-    return [list(filter(lambda l: l != [], expanded_data)), frozen_row_count]
+    return list(filter(lambda l: l != [], expanded_data))
 
 
 def square_data(raw_data):
@@ -47,19 +41,19 @@ def square_data(raw_data):
     return raw_data
 
 
-def get_current_sheet():
+def download_sheet(sheet_id):
     sheets_properties = requests.get(
-        f"https://sheets.googleapis.com/v4/spreadsheets/{os.getenv('SPREADSHEET_ID')}?key={os.getenv('SHEETS_API_KEY')}"
+        f"https://sheets.googleapis.com/v4/spreadsheets/{sheet_id}?key={os.getenv('SHEETS_API_KEY')}"
     ).json()["sheets"]
 
-    sheets_internal = {}
+    sheets_internal = []
 
     for sheet in sheets_properties:
         props = sheet["properties"]
 
         raw_data = (
             requests.get(
-                f"https://sheets.googleapis.com/v4/spreadsheets/{os.getenv('SPREADSHEET_ID')}/values/{props['title']}?key={os.getenv('SHEETS_API_KEY')}"
+                f"https://sheets.googleapis.com/v4/spreadsheets/{sheet_id}/values/{props['title']}?key={os.getenv('SHEETS_API_KEY')}"
             )
             .json()
             .get("values", [[]])
@@ -67,25 +61,28 @@ def get_current_sheet():
 
         squared_data = square_data(raw_data)
 
-        [data, frozen_row_count] = expand_merged_cells(
+        data = expand_merged_cells(
             squared_data,
             sheet.get("merges", []),
-            props.get("gridProperties", {}).get("frozenRowCount", 0),
         )
 
-        sheets_internal[str(props["sheetId"])] = {
+        sheets_internal.append({
             "title": props["title"],
             "data": data,
-            "frozenRowCount": frozen_row_count,
-            "frozenColumnCount": props.get("gridProperties", {}).get(
-                "frozenColumnCount", 0
-            ),
-        }
+            "frozenRowCount": props.get("gridProperties", {}).get("frozenRowCount", 0),
+            "frozenColumnCount": props.get("gridProperties", {}).get("frozenColumnCount", 0),
+        })
         print(props["title"], "betöltve")
 
-    print("TELJESEN BETÖLTVE", asizeof.asizeof(sheets_internal), "B")
+    print("BETÖLTVE", asizeof.asizeof(sheets_internal), "B")
     return sheets_internal
 
 
+def download_sheets():
+    return [sheet for sheet_group in
+            [download_sheet(sheet_id) for sheet_id in os.getenv('SPREADSHEET_IDS').split(",")] for
+            sheet in sheet_group]
+
+
 if __name__ == "__main__":
-    pprint(get_current_sheet())
+    pprint(download_sheets())
