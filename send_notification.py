@@ -53,11 +53,11 @@ def data_to_html(added, removed, name):
 
 
 def match(entry, name):
-    return fuzz.token_set_ratio(entry[1], name) >= 80
+    return fuzz.token_set_ratio(entry[1], name) >= 92
 
 
 def send_notifications(added, removed):
-    emails = json.load(open(os.getenv('EMAILS_FILE')))
+    emails = json.load(open(os.getenv('USERS_FILE')))
 
     for email_entry in emails:
         name, email = itemgetter('name', 'email')(email_entry)
