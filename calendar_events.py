@@ -178,8 +178,13 @@ def remove_event(calendar_id, event_id):
 def full_sync(entries):
     users = json.load(open(os.getenv('USERS_FILE')))
 
+    calendar_ids = {c['summary']:c['id'] for c
+                    in calendar.calendarList().list(fields="items(id,summary)").execute()["items"]}
+
     for user in users:
-        name, email, calendar_id = itemgetter('name', 'email', 'calendar')(user)
+        name, email = itemgetter('name', 'email')(user)
+
+        calendar_id = calendar_ids[name]
 
         # Skip if user doesn't have calendar enabled
         if not calendar_id:
@@ -230,4 +235,4 @@ if __name__ == "__main__":
     #     'role': 'owner'
     # }).execute()
 
-    pprint(calendar.calendarList().list().execute())
+    pprint(calendar.calendarList().list(fields="items(id,summary)").execute()["items"])
