@@ -24,13 +24,11 @@ VOWELS = ['a', 'á', 'e', 'é', 'i', 'í', 'o', 'ó', 'ö', 'ő', 'u', 'ú', 'ü
 
 
 def data_to_html(added, removed, name):
-    html = "<h1>Jelentés változásokról</h1>"
-
-    html += f"<p>Kedves {name}!</p>"
+    html = f"<p>Kedves {name}!</p>"
     html += f"<p>Változás történt az ambuláns beosztásodban:</p>"
 
     if len(added) > 0:
-        html += f"<h2>Hozzáadott bejegyzések</h2><p>"
+        html += f"<h3>Új bejegyzés{'ek' if len(added) > 1 else ''}:</h3><p>"
 
         for entry in added:
             html += f"<u>{print_path(entry[0])}:</u> {entry[1]}"
@@ -38,16 +36,16 @@ def data_to_html(added, removed, name):
         html += "</p>"
 
     if len(removed) > 0:
-        html += f"<h2>Törölt bejegyzések</h2><p>"
+        html += f"<h3>Törölt bejegyzés{'ek' if len(removed) > 1 else ''}:</h3><p>"
 
         for entry in removed:
             html += f"<u>{print_path(entry[0])}:</u> <strike>{entry[1]}</strike>"
 
         html += "</p>"
 
-    html += "<hr/><small>A táblázat napközben óránként van ellenőrizve. (07-22)<br /> \
+    html += "<br /><hr/><small>A táblázat óránként van ellenőrizve, a személyre szóló naptárad is ezzel egyszerre frissül.<br /> \
             Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.<br/>\
-            Az adatok tájékoztató jellegűek, a helyességükért illetve teljességükért felelősséget senki nem vállal.</small>"
+            Az adatok tájékoztató jellegűek, a helyességükért vagy teljességükért felelősséget senki nem vállal.</small>"
 
     return html
 

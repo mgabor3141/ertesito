@@ -12,7 +12,7 @@ def send_email(html, email):
     password = os.getenv("SENDER_PW")
 
     message = MIMEMultipart("alternative")
-    message["Subject"] = f"Változások az Ambulancia Táblázaton"  # {datetime.now()}"
+    message["Subject"] = f"Változások az Ambulancia Táblázatban [{datetime.now().strftime('%Y-%m-%d %H:00')}]"
     message["From"] = "Táblázat Értesítő"
     message["To"] = ", ".join(receiver_email)
 
