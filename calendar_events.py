@@ -45,15 +45,15 @@ def muszak_to_time(muszak, date):
     week = date.isocalendar()[1]
 
     if muszak == 3:
-        start_time = "20:00:00"
-        end_time = "08:00:00"
+        start_time = "19:30:00"
+        end_time = "07:30:00"
         end_date_offset = 1
     elif day == 6 or day == 7:
         start_time = "07:30:00"
         end_time = "19:30:00"
     elif muszak == 1 or muszak == 2:
         if day == 5:  # Friday
-            delelott = bool(week % 2)
+            delelott = not bool(week % 2)
         else:
             delelott = not bool(day % 2)
 
