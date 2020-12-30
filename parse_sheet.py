@@ -5,7 +5,7 @@ from download_sheets import download_sheets
 
 
 def get_path(tab, row, col, row_headers, col_headers):
-    path = [tab["title"]]
+    path = [tab["sheetTitle"], tab["title"]]
 
     for c in range(0, col_headers):
         path.append(tab["data"][row][c].strip())
@@ -75,15 +75,18 @@ def parse_sheet(sheet):
 
         for row in range(row_headers, len(tab["data"])):
             for col in range(col_headers, len(tab["data"][0])):
-                value = tab["data"][row][col].strip()
+                values = tab["data"][row][col].split(",")
 
-                if value:
-                    entries.append(
-                        [
-                            get_path(tab, row, col, row_headers, col_headers),
-                            value
-                        ]
-                    )
+                for value in values:
+                    value = value.strip()
+
+                    if value:
+                        entries.append(
+                            [
+                                get_path(tab, row, col, row_headers, col_headers),
+                                value
+                            ]
+                        )
 
     return entries
 

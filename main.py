@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from pprint import pprint
 
+from calendar_events import full_sync
 from parse_sheet import parse_sheet
 from send_notification import send_notifications
 from download_sheets import download_sheets
@@ -22,7 +23,8 @@ def main():
     # Parse to entries
     entries = [to_tuple(entry) for entry in parse_sheet(sheet)]
 
-    # TODO: Generate calendars
+    # Sync calendar
+    full_sync(entries)
 
     # Load previously saved state
     if PREVIOUS_FILE.exists():
@@ -31,9 +33,6 @@ def main():
         # If we don't have past data save this for next time and just quit
         json.dump(entries, open(PREVIOUS_FILE, "w"), indent=2)
         return
-
-    # Save (and overwrite) previous past state with current
-    json.dump(entries, open(PREVIOUS_FILE, "w"), indent=2)
 
     # Diffs
     added = set(entries) - set(old_entries)
@@ -45,6 +44,9 @@ def main():
     pprint(removed)
 
     send_notifications(added, removed)
+
+    # If all went well: save (and overwrite) previous past state with current
+    json.dump(entries, open(PREVIOUS_FILE, "w"), indent=2)
 
 
 if __name__ == "__main__":

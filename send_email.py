@@ -17,7 +17,7 @@ def send_email(html, email):
     message["To"] = ", ".join(receiver_email)
 
     # Create the plain-text and HTML version of your message
-    text = """Ezt nem kéne látnod"""
+    text = """Kérlek engedélyezd a HTML üzenetek megjelenítését!"""
 
     # Turn these into plain/html MIMEText objects
     part1 = MIMEText(text, "plain")

@@ -42,13 +42,13 @@ def square_data(raw_data):
 
 
 def download_sheet(sheet_id):
-    sheets_properties = requests.get(
+    sheets_json = requests.get(
         f"https://sheets.googleapis.com/v4/spreadsheets/{sheet_id}?key={os.getenv('SHEETS_API_KEY')}"
-    ).json()["sheets"]
+    ).json()
 
     sheets_internal = []
 
-    for sheet in sheets_properties:
+    for sheet in sheets_json["sheets"]:
         props = sheet["properties"]
 
         raw_data = (
@@ -67,6 +67,7 @@ def download_sheet(sheet_id):
         )
 
         sheets_internal.append({
+            "sheetTitle": sheets_json["properties"]["title"],
             "title": props["title"],
             "data": data,
             "frozenRowCount": props.get("gridProperties", {}).get("frozenRowCount", 0),
