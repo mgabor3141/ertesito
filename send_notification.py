@@ -43,7 +43,11 @@ def data_to_html(added, removed, name):
 
         html += "</p>"
 
-    html += "<br /><hr/><small>A táblázat óránként van ellenőrizve, a személyre szóló naptárad is ezzel egyszerre frissül.<br /> \
+    html += "<br /><p>A táblázatok: \
+            <a href='https://docs.google.com/spreadsheets/d/1rIOy7sKY3rZb90BSTl3pLZoDn806k9Zm-ht_JyWkikc/edit'>2021 Ambulancia</a> \
+            <a href='https://docs.google.com/spreadsheets/d/1k8xgA9KElpYedTPuWkXu-elobqWujw2fh1URE48OVsQ/edit'>2021 Éjszaka</a></p>"
+
+    html += "<hr/><small>A táblázat óránként van ellenőrizve, a személyre szóló naptárad is ezzel egyszerre frissül.<br /> \
             Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.<br/>\
             Az adatok tájékoztató jellegűek, a helyességükért vagy teljességükért felelősséget senki nem vállal.</small>"
 
