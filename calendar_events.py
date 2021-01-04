@@ -74,6 +74,7 @@ muszak1 = re.compile(r'(i|1)\.?\smuszak|muszak\s(i|1)\.?')
 muszak2 = re.compile(r'(ii|2)\.?\smuszak|muszak\s(ii|2)\.?')
 ejszaka = re.compile(r'ejszaka')
 protetika = re.compile(r'protetika')
+pretriazs = re.compile(r'pretriazs')
 szajseb = re.compile(r'szajsebeszeti?\sgyakorlat')
 
 date_formats = [
@@ -108,7 +109,7 @@ def entry_to_event(entry):
             title = 'Szájsebészet gyakorlat'
             continue
 
-        if node == "pretriazs" or node == "orvos" or node == "szajsebesz" or node == "rezidens" or node == "annotalas" or protetika.search(node):
+        if pretriazs.search(node) or node == "orvos" or node == "szajsebesz" or node == "rezidens" or node == "annotalas" or protetika.search(node):
             title += ' ' + path_element.strip()
             continue
 
