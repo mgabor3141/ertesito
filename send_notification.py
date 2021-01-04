@@ -31,7 +31,7 @@ def data_to_html(added, removed, name):
         html += f"<h3>Új bejegyzés{'ek' if len(added) > 1 else ''}:</h3><p>"
 
         for entry in added:
-            html += f"<u>{print_path(entry[0])}:</u> {entry[1]}"
+            html += f"<u>{print_path(entry[0])}:</u> {entry[1]}<br />"
 
         html += "</p>"
 
@@ -39,7 +39,7 @@ def data_to_html(added, removed, name):
         html += f"<h3>Törölt bejegyzés{'ek' if len(removed) > 1 else ''}:</h3><p>"
 
         for entry in removed:
-            html += f"<u>{print_path(entry[0])}:</u> <strike>{entry[1]}</strike>"
+            html += f"<u>{print_path(entry[0])}:</u> <strike>{entry[1]}</strike> <br />"
 
         html += "</p>"
 
