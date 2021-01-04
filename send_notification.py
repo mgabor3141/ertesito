@@ -64,8 +64,8 @@ def send_notifications(added, removed):
     for email_entry in emails:
         name, email = itemgetter('name', 'email')(email_entry)
 
-        added_matches = [entry for entry in added if match(entry, name)]
-        removed_matches = [entry for entry in removed if match(entry, name)]
+        added_matches = sorted([entry for entry in added if match(entry, name)])
+        removed_matches = sorted([entry for entry in removed if match(entry, name)])
 
         if len(added_matches) > 0 or len(removed_matches):
             send_email(data_to_html(added_matches, removed_matches, name), email)
@@ -73,11 +73,11 @@ def send_notifications(added, removed):
 
 if __name__ == "__main__":
     _added = [
-        (('Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: NAME')
+        (('Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: dr. Magyar Gábor')
     ]
 
     _removed = [
-        (('Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: NAME')
+        (('Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: dr. Svidro Eszter')
     ]
 
     print(send_notifications(_added, _removed))
