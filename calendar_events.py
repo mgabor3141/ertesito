@@ -102,15 +102,16 @@ def entry_to_event(entry):
             continue
 
         if ejszaka.search(node) is not None:
-            muszak = 3  # Ejszakai muszak
+            muszak = 3
+            title = 'Éjszakai műszak'
             continue
 
         if szajseb.search(node):
             title = 'Szájsebészet gyakorlat'
             continue
 
-        if pretriazs.search(node) or node == "orvos" or node == "szajsebesz" or node == "rezidens" or node == "annotalas" or protetika.search(node):
-            title += ' ' + path_element.strip()
+        if pretriazs.search(node) or node == "annotalas" or protetika.search(node):
+            title = path_element.strip()
             continue
 
         for date_format in date_formats:
