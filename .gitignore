@@ -4,3 +4,5 @@
 /.env
 users.json
 /calendar-service-account.json
+/venv/
+/.idea
