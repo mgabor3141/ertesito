@@ -177,7 +177,7 @@ def remove_event(calendar_id, event_id):
 
 
 def full_sync(entries):
-    users = json.load(open(os.getenv('USERS_FILE')))
+    users = json.load(open(os.getenv('USERS_FILE'), encoding="utf8"))
 
     calendar_ids = {c['summary']:c['id'] for c
                     in calendar.calendarList().list(fields="items(id,summary)").execute()["items"]}

@@ -60,7 +60,7 @@ def match(entry, name):
 
 
 def send_notifications(added, removed):
-    emails = json.load(open(os.getenv('USERS_FILE')))
+    emails = json.load(open(os.getenv('USERS_FILE'), encoding="utf8"))
 
     for email_entry in emails:
         name, email = itemgetter('name', 'email')(email_entry)
