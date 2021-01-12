@@ -186,11 +186,27 @@ def full_sync(entries):
     for user in users:
         name, email = itemgetter('name', 'email')(user)
 
-        calendar_id = calendar_ids[name]
+        calendar_id = calendar_ids.get(name)
 
-        # Skip if user doesn't have calendar enabled
+        # Create calendar if it doesn't exist yet
         if not calendar_id:
-            continue
+            print("Creating calendar for", name)
+
+            new_calendar = calendar.calendars().insert(body={
+                "summary": name
+            }).execute()
+
+            print("New calendar ID:", new_calendar["id"])
+
+            calendar.acl().insert(calendarId=new_calendar["id"], body={
+                'scope': {
+                    'type': 'user',
+                    'value': os.getenv("SENDER_EMAIL")
+                },
+                'role': 'owner'
+            }).execute()
+
+            calendar_id = new_calendar["id"]
 
         print("Processing calendar for", name)
 
@@ -221,20 +237,4 @@ def full_sync(entries):
 
 
 if __name__ == "__main__":
-    # ###### Calendar creation
-
-    # result = calendar.calendars().insert(body={
-    #     "summary": "NAME"
-    # }).execute()
-    #
-    # print(result["id"])
-    #
-    # result = calendar.acl().insert(calendarId=result["id"], body={
-    #     'scope': {
-    #         'type': 'user',
-    #         'value': os.getenv("SENDER_EMAIL")
-    #     },
-    #     'role': 'owner'
-    # }).execute()
-
     pprint(calendar.calendarList().list(fields="items(id,summary)").execute()["items"])
