@@ -56,7 +56,7 @@ def data_to_html(added, removed, name):
 
 
 def match(entry, name):
-    return fuzz.token_set_ratio(entry[1], name) >= 92
+    return fuzz.token_sort_ratio(entry[1], name) >= 92
 
 
 def send_notifications(added, removed):
