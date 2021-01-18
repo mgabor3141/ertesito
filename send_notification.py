@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from operator import itemgetter
 
 from fuzzywuzzy import fuzz
@@ -50,13 +51,17 @@ def data_to_html(added, removed, name):
     html += "<hr/><small>A táblázat óránként van ellenőrizve, a személyre szóló naptárad is ezzel egyszerre frissül.<br /> \
             Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.<br/>\
             Az adatok tájékoztató jellegűek, a helyességükért vagy teljességükért felelősséget senki nem vállal.<br/>\
-            <small>Verzió: 2.1</small></small>"
+            <small>Verzió: 2.2</small></small>"
 
     return html
 
 
 def match(entry, name):
-    return fuzz.token_sort_ratio(entry[1], name) >= 92
+    def preprocess(string):
+        dr = re.compile(r'^dr\.?\s*')
+        return dr.sub("", string.lower().strip())
+
+    return fuzz.token_sort_ratio(preprocess(entry[1]), preprocess(name)) >= 92
 
 
 def send_notifications(added, removed):
