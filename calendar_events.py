@@ -174,11 +174,13 @@ def add_event(calendar_id, entry):
 
 
 def remove_event(calendar_id, event_id):
+    print("Removing", event_id)
     calendar.events().delete(calendarId=calendar_id, eventId=event_id).execute()
 
 
 def full_sync(entries):
     users = json.load(open(os.getenv('USERS_FILE'), encoding="utf8"))
+    names = [user['name'] for user in users]
 
     calendar_ids = {c['summary']:c['id'] for c
                     in calendar.calendarList().list(fields="items(id,summary)").execute()["items"]}
@@ -210,7 +212,7 @@ def full_sync(entries):
 
         print("Processing calendar for", name)
 
-        user_entries = [entry for entry in entries if match(entry, name)]
+        user_entries = [entry for entry in entries if match(entry, name, names)]
 
         # Local events
         entry_ids = set([path_to_event_id(item[0]) for item in user_entries])

@@ -1,9 +1,8 @@
 import json
 import os
-import re
 from operator import itemgetter
 
-from fuzzywuzzy import fuzz
+from fuzzywuzzy import fuzz, process
 
 from send_email import send_email
 
@@ -51,27 +50,29 @@ def data_to_html(added, removed, name):
     html += "<hr/><small>A táblázat óránként van ellenőrizve, a személyre szóló naptárad is ezzel egyszerre frissül.<br /> \
             Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.<br/>\
             Az adatok tájékoztató jellegűek, a helyességükért vagy teljességükért felelősséget senki nem vállal.<br/>\
-            <small>Verzió: 2.2</small></small>"
+            <small>Verzió: 2.3</small></small>"
 
     return html
 
 
-def match(entry, name):
-    def preprocess(string):
-        dr = re.compile(r'^dr\.?\s*')
-        return dr.sub("", string.lower().strip())
+def match(entry, name, names):
+    results = process.extract(entry[1], names, scorer=fuzz.token_set_ratio)
 
-    return fuzz.token_sort_ratio(preprocess(entry[1]), preprocess(name)) >= 92
+    result, primary_score = results[0]
+    secondary_score = results[1][1]
+
+    return result == name and primary_score >= 90 and secondary_score < 90
 
 
 def send_notifications(added, removed):
-    emails = json.load(open(os.getenv('USERS_FILE'), encoding="utf8"))
+    users = json.load(open(os.getenv('USERS_FILE'), encoding="utf8"))
+    names = [user['name'] for user in users]
 
-    for email_entry in emails:
+    for email_entry in users:
         name, email = itemgetter('name', 'email')(email_entry)
 
-        added_matches = sorted([entry for entry in added if match(entry, name)])
-        removed_matches = sorted([entry for entry in removed if match(entry, name)])
+        added_matches = sorted([entry for entry in added if match(entry, name, names)])
+        removed_matches = sorted([entry for entry in removed if match(entry, name, names)])
 
         if len(added_matches) > 0 or len(removed_matches):
             send_email(data_to_html(added_matches, removed_matches, name), email)
@@ -79,11 +80,13 @@ def send_notifications(added, removed):
 
 if __name__ == "__main__":
     _added = [
-        (('2021 Ambulancia', 'Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: dr. Magyar Gábor')
+        (('2021 Ambulancia', 'Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'),
+         'Pretriázs: dr. Magyar Gábor')
     ]
 
     _removed = [
-        (('2021 Ambulancia', 'Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'), 'Pretriázs: dr. Svidro Eszter')
+        (('2021 Ambulancia', 'Január Ambulancia', '2021.01.01.', 'péntek', 'I Műszak', 'Pretriázs'),
+         'Pretriázs: dr. Svidro Eszter')
     ]
 
     print(send_notifications(_added, _removed))
