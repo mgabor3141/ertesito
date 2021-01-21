@@ -50,13 +50,13 @@ def data_to_html(added, removed, name):
     html += "<hr/><small>A táblázat óránként van ellenőrizve, a személyre szóló naptárad is ezzel egyszerre frissül.<br /> \
             Válaszlevélben jelezd, ha kérésed vagy kérdésed van, illetve ha nem szeretnél több ilyen értesítést kapni.<br/>\
             Az adatok tájékoztató jellegűek, a helyességükért vagy teljességükért felelősséget senki nem vállal.<br/>\
-            <small>Verzió: 2.3</small></small>"
+            <small>Verzió: 2.3.1</small></small>"
 
     return html
 
 
 def match(entry, name, names):
-    results = process.extract(entry[1], names, scorer=fuzz.token_set_ratio)
+    results = process.extract(entry[1], names, scorer=fuzz.partial_ratio)
 
     result, primary_score = results[0]
     secondary_score = results[1][1]
